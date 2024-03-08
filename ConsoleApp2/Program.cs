@@ -11,21 +11,21 @@ class Program
     static void Main(string[] args)
     {
         List<Dzial> Odpisy = new List<Dzial>();
-        /*  foreach (string number in krsNumbers)
-          {*/
-        using (var client = new HttpClient())
+        foreach (string number in krsNumbers)
         {
-            var endpoint = new Uri($"https://api-krs.ms.gov.pl/api/krs/OdpisAktualny/49482?rejestr=P&format=json");
-            var result = client.GetAsync(endpoint).Result;
-            var json = result.Content.ReadAsStringAsync().Result;
-            Root? data = JsonSerializer.Deserialize<Root>(json);
-            Odpisy.Add(data.odpis.dane.dzial1);
+            using (var client = new HttpClient())
+            {
+                var endpoint = new Uri($"https://api-krs.ms.gov.pl/api/krs/OdpisAktualny/{number}?rejestr=P&format=json");
+                var result = client.GetAsync(endpoint).Result;
+                var json = result.Content.ReadAsStringAsync().Result;
+                Root? data = JsonSerializer.Deserialize<Root>(json);
+                Odpisy.Add(data.odpis.dane.dzial1);
+            }
         }
-        //}
         StringBuilder sb = new StringBuilder();
         List<PropertyInfo> properties =
         [
-            .. typeof(DanePodmiotu).GetProperties(),
+            .. typeof(Identyfikator).GetProperties(),
             .. typeof(Siedziba).GetProperties(),
             .. typeof(Adres).GetProperties(),
         ];
@@ -33,24 +33,12 @@ class Program
         sb.AppendLine(string.Join(",", properties.Select(o => o.Name)));
         foreach (Dzial odpis in Odpisy)
         {
-            sb.Append(string.Join(",", odpis.siedzibaIAdres.siedziba.GetType().GetProperties().Select(o => o.GetValue(o.Name))));
-            /*            sb.Append(danePodmiotu.nazwa);
-                        sb.Append(",");
-                        sb.Append(odpis.dane.dzial1.siedzibaIAdres.siedziba.wojewodztwo);
-                        sb.Append(",");
-                        sb.Append(odpis.dane.dzial1.siedzibaIAdres.siedziba.powiat);
-                        sb.Append(",");
-                        sb.Append(odpis.dane.dzial1.siedzibaIAdres.siedziba.gmina);
-                        sb.Append(",");
-                        sb.Append(odpis.dane.dzial1.siedzibaIAdres.adres.ulica);
-                        sb.Append(",");
-                        sb.Append(odpis.dane.dzial1.siedzibaIAdres.adres.nrDomu);
-                        sb.Append(",");
-                        sb.Append(odpis.dane.dzial1.siedzibaIAdres.adres.miejscowosc);
-                        sb.Append(",");
-                        sb.AppendLine(odpis.dane.dzial1.siedzibaIAdres.adres.kodPocztowy);*/
+            sb.Append(odpis.danePodmiotu.identyfikatory.nip);
+            sb.Append(",");
+            sb.Append(string.Join(",", odpis.siedzibaIAdres.siedziba.GetType().GetProperties().Select(o => o.GetValue(odpis.siedzibaIAdres.siedziba))));
+            sb.Append(',');
+            sb.AppendLine(string.Join(",", odpis.siedzibaIAdres.adres.GetType().GetProperties().Select(o => o.GetValue(odpis.siedzibaIAdres.adres))));
         }
-        //  File.WriteAllText("C:\\Users\\adam1\\source\\repos\\Results\\result.csv", sb.ToString());
-        Console.WriteLine(sb.ToString());
+        //File.WriteAllText("C:\\Users\\adam1\\source\\repos\\Results\\resultNips.csv", sb.ToString());
     }
 }
