@@ -1,7 +1,6 @@
-﻿namespace KRSDataCollector.DataModel
+﻿namespace KRSDataCollector.DataModel;
+
+public class Root
 {
-    public class Root
-    {
-        public Odpis? odpis { get; set; }
-    }
+    public Odpis? odpis { get; set; }
 }

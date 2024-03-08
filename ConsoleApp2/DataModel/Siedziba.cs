@@ -1,9 +1,8 @@
-﻿namespace KRSDataCollector.DataModel
+﻿namespace KRSDataCollector.DataModel;
+
+public class Siedziba
 {
-    public class Siedziba
-    {
-        public string? wojewodztwo { get; set; }
-        public string? powiat { get; set; }
-        public string? gmina { get; set; }
-    }
+    public string? wojewodztwo { get; set; }
+    public string? powiat { get; set; }
+    public string? gmina { get; set; }
 }
